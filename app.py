@@ -109,12 +109,44 @@ st.markdown(
 st.divider()
 
 # ── CHECK CHROMADB EXISTS ─────────────────────────────────────
+# ── AUTO INGEST IF CHROMADB MISSING ──────────────────────────
 if not os.path.exists(CHROMA_DIR):
-    st.error(
-        "❌ ChromaDB not found! "
-        "Please run `python ingest.py` first to process the PDF."
-    )
-    st.stop()
+    st.warning("⚙️ First run detected! Building knowledge base from PDF...")
+
+    from langchain_community.document_loaders import PyPDFLoader
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+    with st.spinner("📄 Loading and processing PDF... please wait ~30 seconds"):
+        try:
+            # Load PDF
+            loader = PyPDFLoader("docs/hr_policy.pdf")
+            docs = loader.load()
+
+            # Chunk
+            splitter = RecursiveCharacterTextSplitter(
+                chunk_size=500,
+                chunk_overlap=100,
+                separators=["\n\n", "\n", ".", " ", ""]
+            )
+            chunks = splitter.split_documents(docs)
+
+            # Embed + Store
+            embeddings = HuggingFaceEmbeddings(
+                model_name=EMBEDDING_MODEL,
+                model_kwargs={"device": "cpu"},
+                encode_kwargs={"normalize_embeddings": True}
+            )
+            Chroma.from_documents(
+                documents=chunks,
+                embedding=embeddings,
+                persist_directory=CHROMA_DIR
+            )
+            st.success("✅ Knowledge base built! Reloading...")
+            st.rerun()
+
+        except Exception as e:
+            st.error(f"❌ Failed to build knowledge base: {str(e)}")
+            st.stop()
 
 # ── LOAD RAG PIPELINE ─────────────────────────────────────────
 with st.spinner("⚙️ Loading RAG pipeline... (first load may take ~30 seconds)"):
