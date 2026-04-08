@@ -1,6 +1,8 @@
 # app.py
 # PURPOSE: Streamlit Chat UI for HR Policy RAG Chatbot
-
+# Fix for protobuf conflict
+import os
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 import streamlit as st
 import os
 from dotenv import load_dotenv
