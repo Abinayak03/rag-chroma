@@ -8,8 +8,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
 # ── CONFIG ──────────────────────────────────────────────────
-PDF_PATH      = "docs/hr_policy.pdf"
-CHROMA_DIR    = "chroma_db"          # folder where ChromaDB saves data
+PDF_PATH      = os.path.join(os.path.dirname(__file__), "docs/hr_policy.pdf")
+CHROMA_DIR    = os.path.join(os.path.dirname(__file__), "chroma_db")  # folder where ChromaDB saves data
 EMBEDDING_MODEL = "all-MiniLM-L6-v2" # free, lightweight, runs locally
 CHUNK_SIZE    = 500
 CHUNK_OVERLAP = 100

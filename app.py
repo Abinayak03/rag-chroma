@@ -14,7 +14,7 @@ from langchain_core.runnables import RunnablePassthrough
 load_dotenv()
 
 # ── CONFIG ────────────────────────────────────────────────────
-CHROMA_DIR      = "chroma_db"
+CHROMA_DIR      = os.path.join(os.path.dirname(__file__), "chroma_db")
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 GROQ_MODEL      = "llama-3.1-8b-instant"
 TOP_K_RESULTS   = 3
